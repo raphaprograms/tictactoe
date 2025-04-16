@@ -51,7 +51,7 @@ function gameBoard() {
 
 
 
- function createPlayer(name, token) {
+function createPlayer(name, token) {
     return {
         name,
         token,
@@ -60,7 +60,7 @@ function gameBoard() {
             gameBoard.placeToken(row, col, token);
         }
     }
- };
+};
 
 
 function gameController(player1, player2, gameBoardInstance) {
@@ -136,6 +136,7 @@ function gameController(player1, player2, gameBoardInstance) {
     return { 
         playTurn,
         restartGame,
+        checkWinner,
         getCurrentPlayer: () => currentPlayer
     };
 }
@@ -152,6 +153,7 @@ function startGameFactory() {
 
         display.renderBoard(newBoard.board);
         display.updateTurnDisplay();
+        display.updateWinDisplay();
     }
 
     return { startGame};
@@ -168,6 +170,13 @@ function displayController (gameBoardInstance, gameController) {
         const turnIndicator = document.createElement('div');
         turnIndicator.classList.add('turn-indicator');
         container.appendChild(turnIndicator);
+    }
+
+    let winIndicator = document.querySelector('.win-indicator');
+    if (!winIndicator) {
+        const winIndicator = document.createElement('div');
+        winIndicator.classList.add('win-indicator');
+        container.appendChild(winIndicator);
     }
 
 
@@ -188,6 +197,7 @@ function displayController (gameBoardInstance, gameController) {
                 cellDiv.addEventListener('click', () => {
                     gameController.playTurn(rowIndex, colIndex);
                     updateTurnDisplay();
+                    updateWinDisplay();
                     renderBoard(board);
                 })
 
@@ -195,11 +205,22 @@ function displayController (gameBoardInstance, gameController) {
             })
         })
     }
-    
+
     function updateTurnDisplay() {
         const currentPlayer = gameController.getCurrentPlayer();
         turnIndicator.textContent = `${currentPlayer.name}'s turn (${currentPlayer.token})`;
     }
+
+    function updateWinDisplay() {
+        const winner = gameController.checkWinner();
+        const currentPlayer = gameController.getCurrentPlayer();
+        if (winner){
+            turnIndicator.textContent = '';
+            winIndicator.textContent = `${currentPlayer.name}'s WINS! (${currentPlayer.token}) WINS!`;
+            return;
+        }
+    }
+
 
     function handleForm() {
         const gameStarter = startGameFactory();
@@ -218,6 +239,7 @@ function displayController (gameBoardInstance, gameController) {
     return {
         renderBoard,
         updateTurnDisplay,
+        updateWinDisplay,
         handleForm
     };
 }
@@ -228,4 +250,4 @@ const samplePlayer2 = createPlayer('Player 2', 'O');
 const sampleController = gameController(samplePlayer1, samplePlayer2, sampleBoard);
 
 const display = displayController(sampleBoard, sampleController);
-display.handleForm();
+display.handleForm(); 
