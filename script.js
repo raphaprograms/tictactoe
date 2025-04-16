@@ -1,6 +1,3 @@
-// need a game board
-// need players to play
-// gameboard needs to be able to be filled in with tokens
 
 function gameBoard() {
 
@@ -53,19 +50,8 @@ function gameBoard() {
     }
  };
 
-const game = gameBoard();
-const player1 = createPlayer('Player 1', 'X');
-const player2 = createPlayer('Player 2', 'O');
 
-player1.makeMove(0, 0 , game);
-
-game.printBoard();
-
-player2.makeMove(1, 1, game);
-
-game.printBoard();
-
-functionGameController(player1, player2, board) {
+function GameController(player1, player2, gameBoardInstance) {
     let currentPlayer = player1;
     let isGameOver = false;
 
@@ -74,11 +60,11 @@ functionGameController(player1, player2, board) {
     }
 
     function isBoardFull() {
-        return board.board.flat().every(cell => cell !== '');
+        return gameBoardInstance.board.flat().every(cell => cell !== ' ');
     }
 
     function checkWinner() {
-        const b = board.board;
+        const b = gameBoardInstance.board;
         const t = currentPlayer.token;
 
         for (let row of b) {
@@ -95,13 +81,47 @@ functionGameController(player1, player2, board) {
         return false;
     }
 
+    function playTurn(row, col) {
+        if (isGameOver) {
+            console.log('Game over. Restart to play again.');
+            return;
+        }
+
+        gameBoardInstance.placeToken(row, col, currentPlayer.token);
+
+        if (checkWinner()) {
+            gameBoardInstance.printBoard();
+            console.log(`${currentPlayer.name} wins!`);
+            isGameOver = true;
+            return;
+        }
+
+        if (isBoardFull()) {
+            gameBoardInstance.printBoard();
+            console.log("It's a tie!");
+            isGameOver = true;
+            return;
+        }
+
+        switchPlayer();
+        gameBoardInstance.printBoard();
+        console.log(`Next turn: ${currentPlayer.name} (${currentPlayer.token})`);
+    }
 
     return { 
-
+        playTurn,
+        getCurrentPlayer: () => currentPlayer
     };
 }
 
+const gameBoardInstance = gameBoard();
+const player1 = createPlayer('Player 1', 'X');
+const player2 = createPlayer('Player 2', 'O');
 
- let  = {
+const game = GameController(player1, player2, gameBoardInstance);
 
- }
+game.playTurn(0, 0);
+game.playTurn(1, 2);
+game.playTurn(1, 2);
+game.playTurn(0, 2);
+game.playTurn(2, 2);
