@@ -6,6 +6,7 @@ function gameBoard() {
     const board = [];
 
     function makeBoard(){
+        board.length = 0;
         for(let i = 0; i < rows; i++) {
             let row = [];
 
@@ -26,8 +27,10 @@ function gameBoard() {
     function placeToken(row, col, token) {
         if(board[row][col] === ' '){
             board[row][col] = token;
+            return true;
         } else {
             console.log('Cell is already taken!')
+            return false;
         }
     }
 
@@ -96,7 +99,9 @@ function GameController(player1, player2, gameBoardInstance) {
             return;
         }
 
-        gameBoardInstance.placeToken(row, col, currentPlayer.token);
+        const moveMade = gameBoardInstance.placeToken(row, col, currentPlayer.token);
+
+        if (!moveMade) return;
 
         if (checkWinner()) {
             gameBoardInstance.printBoard();
@@ -117,8 +122,20 @@ function GameController(player1, player2, gameBoardInstance) {
         console.log(`Next turn: ${currentPlayer.name} (${currentPlayer.token})`);
     }
 
+    function restartGame() {
+        gameBoardInstance.resetBoard();
+        isGameOver = false;
+        currentPlayer = player1;
+        console.log('Game Restarted!');
+        gameBoardInstance.printBoard();
+        console.log(`First turn: ${currentPlayer.name} (${currentPlayer.token})`);
+
+
+    }
+
     return { 
         playTurn,
+        restartGame,
         getCurrentPlayer: () => currentPlayer
     };
 }
@@ -127,10 +144,11 @@ const gameBoardInstance = gameBoard();
 const player1 = createPlayer('Player 1', 'X');
 const player2 = createPlayer('Player 2', 'O');
 
-const game = GameController(player1, player2, gameBoardInstance);
+const playGame = GameController(player1, player2, gameBoardInstance);
 
-game.playTurn(0, 0);
-game.playTurn(1, 2);
-game.playTurn(1, 2);
-game.playTurn(0, 2);
-game.playTurn(2, 2);
+playGame.playTurn(0, 0);
+playGame.playTurn(1, 2);
+playGame.restartGame();
+playGame.playTurn(1, 2);
+playGame.playTurn(1, 2);
+playGame.playTurn(2, 2);
