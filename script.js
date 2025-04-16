@@ -140,15 +140,46 @@ function GameController(player1, player2, gameBoardInstance) {
     };
 }
 
+function displayController () {
+    const boardContainer = document.querySelector('.game-board');
+
+    function renderBoard(board) {
+        boardContainer.textContent = '';
+
+        board.forEach((row, rowIndex) => {
+
+            row.forEach((cell, colIndex) => {
+
+                const cellDiv = document.createElement('div');
+                cellDiv.classList.add('cell');
+                cellDiv.textContent = cell;
+
+                cellDiv.dataset.row = rowIndex;
+                cellDiv.dataset.col = colIndex;
+
+                boardContainer.appendChild(cellDiv);
+            })
+        })
+    }
+
+    return {
+        renderBoard
+    }
+}
+
 const gameBoardInstance = gameBoard();
 const player1 = createPlayer('Player 1', 'X');
 const player2 = createPlayer('Player 2', 'O');
 
 const playGame = GameController(player1, player2, gameBoardInstance);
 
+const display = displayController();
+
 playGame.playTurn(0, 0);
+display.renderBoard(gameBoardInstance.board);
 playGame.playTurn(1, 2);
 playGame.restartGame();
 playGame.playTurn(1, 2);
 playGame.playTurn(1, 2);
 playGame.playTurn(2, 2);
+

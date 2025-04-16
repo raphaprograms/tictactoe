@@ -1,0 +1,25 @@
+.container {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+
+}
+.game-board {
+    display: grid;
+    grid-template-rows: repeat(3, 50px);
+    grid-template-columns: repeat(3, 50px);
+    gap: 7px;
+    margin: 10px;
+}
+
+.cell {
+    width: 45px;
+    height: 45px;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #dcdcdc;
+    cursor: pointer;
+    border: 1px solid #000000;
+}
