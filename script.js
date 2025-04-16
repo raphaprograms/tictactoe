@@ -63,7 +63,7 @@ function gameBoard() {
  };
 
 
-function GameController(player1, player2, gameBoardInstance) {
+function gameController(player1, player2, gameBoardInstance) {
     let currentPlayer = player1;
     let isGameOver = false;
 
@@ -140,11 +140,39 @@ function GameController(player1, player2, gameBoardInstance) {
     };
 }
 
-function displayController () {
+function startGameFactory() {
+    function startGame(name1, name2){
+        
+        const player1 = createPlayer(name1 || 'Player 1', 'X');
+        const player2 = createPlayer(name2 || 'Player 2', 'O');
+            
+        const newBoard = gameBoard();
+        const newController = gameController(player1, player2, newBoard);
+        const display = displayController(newBoard, newController);
+
+        display.renderBoard(newBoard.board);
+        display.updateTurnDisplay();
+    }
+
+    return { startGame};
+}
+
+function displayController (gameBoardInstance, gameController) {
+    const container = document.querySelector('.container');
     const boardContainer = document.querySelector('.game-board');
 
+    boardContainer.textContent = ' ';
+
+    let turnIndicator = document.querySelector('.turn-indicator');
+    if (!turnIndicator) {
+        const turnIndicator = document.createElement('div');
+        turnIndicator.classList.add('turn-indicator');
+        container.appendChild(turnIndicator);
+    }
+
+
     function renderBoard(board) {
-        boardContainer.textContent = '';
+        boardContainer.textContent = ' ';
 
         board.forEach((row, rowIndex) => {
 
@@ -157,29 +185,47 @@ function displayController () {
                 cellDiv.dataset.row = rowIndex;
                 cellDiv.dataset.col = colIndex;
 
+                cellDiv.addEventListener('click', () => {
+                    gameController.playTurn(rowIndex, colIndex);
+                    updateTurnDisplay();
+                    renderBoard(board);
+                })
+
                 boardContainer.appendChild(cellDiv);
             })
         })
     }
+    
+    function updateTurnDisplay() {
+        const currentPlayer = gameController.getCurrentPlayer();
+        turnIndicator.textContent = `${currentPlayer.name}'s turn (${currentPlayer.token})`;
+    }
+
+    function handleForm() {
+        const gameStarter = startGameFactory();
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); 
+            
+            const name1 = document.getElementById('player1-name').value.trim();
+            const name2 = document.getElementById('player2-name').value.trim();
+
+            gameStarter.startGame(name1, name2);
+        });
+    }
 
     return {
-        renderBoard
-    }
+        renderBoard,
+        updateTurnDisplay,
+        handleForm
+    };
 }
 
-const gameBoardInstance = gameBoard();
-const player1 = createPlayer('Player 1', 'X');
-const player2 = createPlayer('Player 2', 'O');
+const sampleBoard = gameBoard();
+const samplePlayer1 = createPlayer('Player 1', 'X');
+const samplePlayer2 = createPlayer('Player 2', 'O');
+const sampleController = gameController(samplePlayer1, samplePlayer2, sampleBoard);
 
-const playGame = GameController(player1, player2, gameBoardInstance);
-
-const display = displayController();
-
-playGame.playTurn(0, 0);
-display.renderBoard(gameBoardInstance.board);
-playGame.playTurn(1, 2);
-playGame.restartGame();
-playGame.playTurn(1, 2);
-playGame.playTurn(1, 2);
-playGame.playTurn(2, 2);
-
+const display = displayController(sampleBoard, sampleController);
+display.handleForm();
