@@ -5,14 +5,16 @@ function gameBoard() {
     let columns = 3;
     const board = [];
 
-    for(let i = 0; i < rows; i++) {
-        let row = [];
+    function makeBoard(){
+        for(let i = 0; i < rows; i++) {
+            let row = [];
 
-        for(let j = 0; j < columns; j++) {
-            row.push(' ');
+            for(let j = 0; j < columns; j++) {
+                row.push(' ');
+            }
+
+            board.push(row);
         }
-
-        board.push(row);
     }
 
     function printBoard() {
@@ -29,10 +31,17 @@ function gameBoard() {
         }
     }
 
+    function resetBoard(){
+        makeBoard();
+    }
+
+    makeBoard();
+
     return {
         board, 
         printBoard,
         placeToken,
+        resetBoard
     };
 
 }
